@@ -558,6 +558,142 @@
       text-transform: uppercase;
     }
 
+    /* --- HOME / CARROSSEL POR TEMA --- */
+    .carousel-theme {
+      margin-bottom: 2.75rem;
+    }
+    .carousel-head {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .carousel-head h3 {
+      font-size: 1.15rem;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      margin: 0;
+    }
+    .carousel-head .tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--red);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .carousel-viewport { position: relative; }
+    .carousel-track {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding: 0.25rem 0 0.75rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--red) transparent;
+    }
+    .carousel-track::-webkit-scrollbar { height: 6px; }
+    .carousel-track::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
+    .carousel-track::-webkit-scrollbar-track { background: transparent; }
+    .carousel-track .video-card {
+      flex: 0 0 300px;
+      max-width: 300px;
+      scroll-snap-align: start;
+    }
+    .carousel-btn {
+      position: absolute;
+      top: 38%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: rgba(204,0,0,0.85);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      opacity: 0;
+      transition: opacity 0.25s, background 0.2s;
+      border-radius: 4px;
+    }
+    .carousel-viewport:hover .carousel-btn { opacity: 0.95; }
+    .carousel-btn:hover { background: #cc0000; }
+    .carousel-btn.prev { left: -6px; }
+    .carousel-btn.next { right: -6px; }
+    .carousel-btn svg { width: 20px; height: 20px; fill: #fff; }
+    @media (max-width: 640px) {
+      .carousel-track .video-card { flex: 0 0 78%; max-width: 78%; }
+      .carousel-btn { display: none; }
+    }
+
+    /* --- GALERIA --- */
+    .gallery-sub {
+      font-size: 1.05rem;
+      letter-spacing: 0.03em;
+      color: var(--white);
+      margin: 1.5rem 0 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #1e1e1e;
+    }
+    .gallery-grid {
+      columns: 3 260px;
+      column-gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .gallery-grid .photo {
+      display: block;
+      margin: 0 0 1rem;
+      break-inside: avoid;
+      position: relative;
+      cursor: zoom-in;
+      overflow: hidden;
+      border: 1px solid #1e1e1e;
+      background: var(--black-light);
+    }
+    .gallery-grid .photo img {
+      width: 100%;
+      display: block;
+      transition: transform 0.4s ease, filter 0.4s ease;
+      filter: grayscale(15%);
+    }
+    .gallery-grid .photo:hover img {
+      transform: scale(1.04);
+      filter: grayscale(0%);
+    }
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.94);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      cursor: zoom-out;
+      padding: 2vh 2vw;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 94vw;
+      max-height: 94vh;
+      object-fit: contain;
+      box-shadow: 0 0 40px rgba(0,0,0,0.6);
+    }
+    .lightbox .lb-close {
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      font-size: 2rem;
+      color: #fff;
+      background: none;
+      border: none;
+      cursor: pointer;
+      line-height: 1;
+    }
+
   </style>
 </head>
 <body>
@@ -570,18 +706,113 @@
   </header>
 
   <nav id="main-nav">
-    <button class="tab-btn active" data-tab="comerciais">IA Comerciais</button>
+    <button class="tab-btn active" data-tab="home">Home</button>
+    <button class="tab-btn" data-tab="comerciais">IA Comerciais</button>
     <button class="tab-btn" data-tab="autorais">IA Autorais</button>
     <button class="tab-btn" data-tab="experimentos">Experimentos</button>
-    <button class="tab-btn" data-tab="sem-ia">Sem IA</button>
+    <button class="tab-btn" data-tab="sem-ia">Curtas</button>
     <button class="tab-btn" data-tab="tv">TV & Canais</button>
+    <button class="tab-btn" data-tab="galeria">Galeria</button>
     <button class="tab-btn" data-tab="bio">Bio & Contato</button>
   </nav>
 
   <main>
 
+    <!-- ===== ABA: HOME ===== -->
+    <section class="tab-panel active" id="tab-home">
+      <div class="section-header">
+        <h2>Home</h2>
+        <span class="tag">DESTAQUES</span>
+      </div>
+
+      <div class="carousel-theme">
+        <div class="carousel-head"><h3>IA Comerciais</h3><span class="tag">Client Work</span></div>
+        <div class="carousel-viewport">
+          <button class="carousel-btn prev" aria-label="Anterior"><svg viewBox="0 0 24 24"><polygon points="15,4 7,12 15,20"/></svg></button>
+          <div class="carousel-track">
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://youtube.com/shorts/CDokGpG-vk8" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/CDokGpG-vk8/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/CDokGpG-vk8/hqdefault.jpg'" alt="Tanque de Pressão 10L" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Tanque de Pressão 10L com Pistola</h3><div class="meta">YOUTUBE SHORTS · IA COMERCIAL</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://youtube.com/shorts/Q__Wc-yByLI" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/Q__Wc-yByLI/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/Q__Wc-yByLI/hqdefault.jpg'" alt="Esmerilhadeira" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Esmerilhadeira</h3><div class="meta">YOUTUBE SHORTS · IA COMERCIAL</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://youtube.com/shorts/9S-zxbYvy-8" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/9S-zxbYvy-8/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/9S-zxbYvy-8/hqdefault.jpg'" alt="Misturador de Argamassa" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Misturador de Argamassa</h3><div class="meta">YOUTUBE SHORTS · IA COMERCIAL</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://youtube.com/shorts/DfHobTc_mMg" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/DfHobTc_mMg/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/DfHobTc_mMg/hqdefault.jpg'" alt="Lixeira 20L" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Lixeira 20L</h3><div class="meta">YOUTUBE SHORTS · IA COMERCIAL</div></div></div>
+          </div>
+          <button class="carousel-btn next" aria-label="Próximo"><svg viewBox="0 0 24 24"><polygon points="9,4 17,12 9,20"/></svg></button>
+        </div>
+      </div>
+
+      <div class="carousel-theme">
+        <div class="carousel-head"><h3>IA Autorais</h3><span class="tag">Autoral</span></div>
+        <div class="carousel-viewport">
+          <button class="carousel-btn prev" aria-label="Anterior"><svg viewBox="0 0 24 24"><polygon points="15,4 7,12 15,20"/></svg></button>
+          <div class="carousel-track">
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/shorts/YfLx8kOCzaA" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/YfLx8kOCzaA/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/YfLx8kOCzaA/hqdefault.jpg'" alt="Sem Biriri, Sem Real" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Sem Biriri, Sem Real</h3><div class="meta">YOUTUBE · AUTORAL</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=x-H7hxf0GqU" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/x-H7hxf0GqU/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/x-H7hxf0GqU/hqdefault.jpg'" alt="Asanbosam" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Asanbosam — Vampiro vingativo</h3><div class="meta">YOUTUBE · AUTORAL</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=6Wa-LitBdRs" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/6Wa-LitBdRs/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/6Wa-LitBdRs/hqdefault.jpg'" alt="Kafka's Machine" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Kafka's Machine</h3><div class="meta">YOUTUBE · AUTORAL</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=KR8_VxFH_cY" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/KR8_VxFH_cY/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/KR8_VxFH_cY/hqdefault.jpg'" alt="A Fada Boêmia" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>A Fada Boêmia que Aposta contra Ursos em Sinuca</h3><div class="meta">YOUTUBE · AUTORAL</div></div></div>
+          </div>
+          <button class="carousel-btn next" aria-label="Próximo"><svg viewBox="0 0 24 24"><polygon points="9,4 17,12 9,20"/></svg></button>
+        </div>
+      </div>
+
+      <div class="carousel-theme">
+        <div class="carousel-head"><h3>Experimentos</h3><span class="tag">Research</span></div>
+        <div class="carousel-viewport">
+          <button class="carousel-btn prev" aria-label="Anterior"><svg viewBox="0 0 24 24"><polygon points="15,4 7,12 15,20"/></svg></button>
+          <div class="carousel-track">
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=sMNemGq93qc" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/sMNemGq93qc/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/sMNemGq93qc/hqdefault.jpg'" alt="Propaganda de tênis fictício" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Propaganda de tênis fictício</h3><div class="meta">YOUTUBE · EXPERIMENTO IA</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=LAVQTjaFhx8" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/LAVQTjaFhx8/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/LAVQTjaFhx8/hqdefault.jpg'" alt="Série Quaresma" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Série Quaresma — batismo e primeira tentação</h3><div class="meta">YOUTUBE · EXPERIMENTO IA</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=qhPR0xv0W1Q" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/qhPR0xv0W1Q/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/qhPR0xv0W1Q/hqdefault.jpg'" alt="Duende do MASP" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Duende do MASP</h3><div class="meta">YOUTUBE · EXPERIMENTO IA</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://youtu.be/FyPDdowhjGU" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/FyPDdowhjGU/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/FyPDdowhjGU/hqdefault.jpg'" alt="Abertura Zé de Marte" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Abertura — Zé de Marte</h3><div class="meta">YOUTUBE · CHARACTER ANIMATOR</div></div></div>
+          </div>
+          <button class="carousel-btn next" aria-label="Próximo"><svg viewBox="0 0 24 24"><polygon points="9,4 17,12 9,20"/></svg></button>
+        </div>
+      </div>
+
+      <div class="carousel-theme">
+        <div class="carousel-head"><h3>Curtas</h3><span class="tag">Sem IA</span></div>
+        <div class="carousel-viewport">
+          <button class="carousel-btn prev" aria-label="Anterior"><svg viewBox="0 0 24 24"><polygon points="15,4 7,12 15,20"/></svg></button>
+          <div class="carousel-track">
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=JX-F8MY6nvo" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/JX-F8MY6nvo/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/JX-F8MY6nvo/hqdefault.jpg'" alt="Odisseia do Desempregado" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Odisseia do Desempregado</h3><div class="meta">YOUTUBE · CURTA</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=lu82BtWdo8E" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/lu82BtWdo8E/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/lu82BtWdo8E/hqdefault.jpg'" alt="Diário de Jano" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Diário de Jano — ep 0</h3><div class="meta">YOUTUBE · CURTA</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=3lH7xAF8ljY" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/3lH7xAF8ljY/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/3lH7xAF8ljY/hqdefault.jpg'" alt="Submundo Luminus" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>SUBMUNDO LUMINUS | Fashion Film</h3><div class="meta">YOUTUBE · CURTA</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=djaB-cUw9IM" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/djaB-cUw9IM/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/djaB-cUw9IM/hqdefault.jpg'" alt="Meia 3" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>MEIA 3</h3><div class="meta">YOUTUBE · CURTA</div></div></div>
+          </div>
+          <button class="carousel-btn next" aria-label="Próximo"><svg viewBox="0 0 24 24"><polygon points="9,4 17,12 9,20"/></svg></button>
+        </div>
+      </div>
+
+      <div class="carousel-theme">
+        <div class="carousel-head"><h3>TV &amp; Canais</h3><span class="tag">Broadcast</span></div>
+        <div class="carousel-viewport">
+          <button class="carousel-btn prev" aria-label="Anterior"><svg viewBox="0 0 24 24"><polygon points="15,4 7,12 15,20"/></svg></button>
+          <div class="carousel-track">
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=7lNUNvFZv4c" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/7lNUNvFZv4c/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/7lNUNvFZv4c/hqdefault.jpg'" alt="IVANILDOMOTO" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>IVANILDOMOTO</h3><div class="meta">YOUTUBE · TV / CANAL</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=L0hOouiT5Ew" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/L0hOouiT5Ew/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/L0hOouiT5Ew/hqdefault.jpg'" alt="RESZEORLANDO" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>RESZEORLANDO</h3><div class="meta">YOUTUBE · TV / CANAL</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=g3DVr8Z6cpg" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/g3DVr8Z6cpg/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/g3DVr8Z6cpg/hqdefault.jpg'" alt="ELIANDRA" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>ELIANDRA</h3><div class="meta">YOUTUBE · TV / CANAL</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://www.youtube.com/watch?v=N50n47-UBho" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/N50n47-UBho/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/N50n47-UBho/hqdefault.jpg'" alt="DANIEL" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>DANIEL</h3><div class="meta">YOUTUBE · TV / CANAL</div></div></div>
+          </div>
+          <button class="carousel-btn next" aria-label="Próximo"><svg viewBox="0 0 24 24"><polygon points="9,4 17,12 9,20"/></svg></button>
+        </div>
+      </div>
+
+      <div class="carousel-theme">
+        <div class="carousel-head"><h3>Galeria</h3><span class="tag">Fotografia &amp; Arte Visual</span></div>
+        <div class="carousel-viewport">
+          <button class="carousel-btn prev" aria-label="Anterior"><svg viewBox="0 0 24 24"><polygon points="15,4 7,12 15,20"/></svg></button>
+          <div class="carousel-track">
+            <div class="video-card"><a class="photo" href="assets/fotos/Soldados_e_atores.jpg" style="display:block;"><div class="video-embed"><img src="assets/fotos/Soldados_e_atores.jpg" alt="Soldados e atores" loading="lazy" style="width:100%;height:100%;object-fit:cover;" /></div></a><div class="video-info"><h3>Fotografia</h3><div class="meta">GALERIA · FOTO</div></div></div>
+            <div class="video-card"><a class="photo" href="assets/fotos/Ponto_de_Onibus.jpg" style="display:block;"><div class="video-embed"><img src="assets/fotos/Ponto_de_Onibus.jpg" alt="Ponto de Ônibus" loading="lazy" style="width:100%;height:100%;object-fit:cover;" /></div></a><div class="video-info"><h3>Fotografia</h3><div class="meta">GALERIA · FOTO</div></div></div>
+            <div class="video-card"><a class="photo" href="assets/visuais/colagem1.jpg" style="display:block;"><div class="video-embed"><img src="assets/visuais/colagem1.jpg" alt="Colagem" loading="lazy" style="width:100%;height:100%;object-fit:cover;" /></div></a><div class="video-info"><h3>Visuais</h3><div class="meta">GALERIA · COLAGEM</div></div></div>
+            <div class="video-card"><div class="video-embed"><a class="yt-thumb-link" href="https://youtu.be/kpeFcziIA_0" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/kpeFcziIA_0/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/kpeFcziIA_0/hqdefault.jpg'" alt="Seu João Mesquita" loading="lazy" /><div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></a></div><div class="video-info"><h3>Seu João Mesquita</h3><div class="meta">GALERIA · VÍDEO</div></div></div>
+          </div>
+          <button class="carousel-btn next" aria-label="Próximo"><svg viewBox="0 0 24 24"><polygon points="9,4 17,12 9,20"/></svg></button>
+        </div>
+      </div>
+
+    </section>
+
     <!-- ===== ABA: IA COMERCIAIS ===== -->
-    <section class="tab-panel active" id="tab-comerciais">
+    <section class="tab-panel" id="tab-comerciais">
       <div class="section-header">
         <h2>IA Comerciais</h2>
         <span class="tag">CLIENT WORK</span>
@@ -1193,6 +1424,24 @@
 
         <div class="video-card">
           <div class="video-embed">
+            <a class="yt-thumb-link" href="https://www.youtube.com/shorts/YfLx8kOCzaA" target="_blank" rel="noopener">
+              <img src="https://img.youtube.com/vi/YfLx8kOCzaA/maxresdefault.jpg"
+                   onerror="this.src='https://img.youtube.com/vi/YfLx8kOCzaA/hqdefault.jpg'"
+                   alt="Thumbnail do vídeo" loading="lazy" />
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </a>
+          </div>
+          <div class="video-info">
+            <h3>Sem Biriri, Sem Real</h3>
+            <p>Obra autoral criada com inteligência artificial.</p>
+            <div class="meta">YOUTUBE · YfLx8kOCzaA</div>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-embed">
             <a class="yt-thumb-link" href="https://www.youtube.com/watch?v=x-H7hxf0GqU" target="_blank" rel="noopener">
               <img src="https://img.youtube.com/vi/x-H7hxf0GqU/maxresdefault.jpg" 
                    onerror="this.src='https://img.youtube.com/vi/x-H7hxf0GqU/hqdefault.jpg'"
@@ -1287,7 +1536,7 @@
     <!-- ===== ABA: EXPERIMENTOS ===== -->
     <section class="tab-panel" id="tab-experimentos">
       <div class="section-header">
-        <h2>Experimentos & Testes</h2>
+        <h2>Experimentos de IA</h2>
         <span class="tag">RESEARCH</span>
       </div>
       <div class="video-grid" id="grid-experimentos">
@@ -1365,6 +1614,68 @@
         </div>
 
       </div>
+
+      <div class="section-header" style="margin-top: 2.5rem;">
+        <h2>Adobe Character Animator</h2>
+        <span class="tag">MOTION</span>
+      </div>
+      <div class="video-grid" id="grid-character-animator">
+
+        <div class="video-card">
+          <div class="video-embed">
+            <a class="yt-thumb-link" href="https://youtu.be/FyPDdowhjGU" target="_blank" rel="noopener">
+              <img src="https://img.youtube.com/vi/FyPDdowhjGU/maxresdefault.jpg"
+                   onerror="this.src='https://img.youtube.com/vi/FyPDdowhjGU/hqdefault.jpg'"
+                   alt="Thumbnail do vídeo" loading="lazy" />
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </a>
+          </div>
+          <div class="video-info">
+            <h3>Abertura — Zé de Marte</h3>
+            <p>Personagem animado em tempo real com Adobe Character Animator.</p>
+            <div class="meta">YOUTUBE · FyPDdowhjGU</div>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-embed">
+            <a class="yt-thumb-link" href="https://youtu.be/n_Gfn08Vvn8" target="_blank" rel="noopener">
+              <img src="https://img.youtube.com/vi/n_Gfn08Vvn8/maxresdefault.jpg"
+                   onerror="this.src='https://img.youtube.com/vi/n_Gfn08Vvn8/hqdefault.jpg'"
+                   alt="Thumbnail do vídeo" loading="lazy" />
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </a>
+          </div>
+          <div class="video-info">
+            <h3>Zé de Marte 1</h3>
+            <p>Personagem animado em tempo real com Adobe Character Animator.</p>
+            <div class="meta">YOUTUBE · n_Gfn08Vvn8</div>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-embed">
+            <a class="yt-thumb-link" href="https://youtu.be/yj5NEc6lymQ" target="_blank" rel="noopener">
+              <img src="https://img.youtube.com/vi/yj5NEc6lymQ/maxresdefault.jpg"
+                   onerror="this.src='https://img.youtube.com/vi/yj5NEc6lymQ/hqdefault.jpg'"
+                   alt="Thumbnail do vídeo" loading="lazy" />
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </a>
+          </div>
+          <div class="video-info">
+            <h3>Zé de Marte — GPS</h3>
+            <p>Personagem animado em tempo real com Adobe Character Animator.</p>
+            <div class="meta">YOUTUBE · yj5NEc6lymQ</div>
+          </div>
+        </div>
+
+      </div>
     </section>
 
     <!-- ===== ABA: FEITOS EM IA ===== -->
@@ -1372,10 +1683,43 @@
     <!-- ===== ABA: SEM IA ===== -->
     <section class="tab-panel" id="tab-sem-ia">
       <div class="section-header">
-        <h2>Sem IA</h2>
+        <h2>Curtas</h2>
         <span class="tag">VIMEO</span>
       </div>
       <div class="video-grid" id="grid-sem-ia">
+
+        <div class="video-card">
+          <div class="video-embed">
+            <a class="yt-thumb-link" href="https://www.youtube.com/watch?v=JX-F8MY6nvo" target="_blank" rel="noopener">
+              <img src="https://img.youtube.com/vi/JX-F8MY6nvo/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/JX-F8MY6nvo/hqdefault.jpg'" alt="Odisseia do Desempregado" loading="lazy" />
+              <div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            </a>
+          </div>
+          <div class="video-info">
+            <h3>Curta-metragem "Odisseia do Desempregado"</h3>
+            <p>Fotografia e Som direto por Júlio.</p>
+            <div class="meta">YOUTUBE · JX-F8MY6nvo</div>
+          </div>
+        </div>
+
+
+        <div class="video-card">
+          <div class="video-embed">
+            <a class="yt-thumb-link" href="https://www.youtube.com/watch?v=lu82BtWdo8E" target="_blank" rel="noopener">
+              <img src="https://img.youtube.com/vi/lu82BtWdo8E/maxresdefault.jpg" 
+                   onerror="this.src='https://img.youtube.com/vi/lu82BtWdo8E/hqdefault.jpg'"
+                   alt="Thumbnail do vídeo" loading="lazy" />
+              <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </a>
+          </div>
+          <div class="video-info">
+            <h3>Diário de Jano — ep 0</h3>
+            <p>Vídeo de Júlio Mesquita.</p>
+            <div class="meta">YOUTUBE · lu82BtWdo8E</div>
+          </div>
+        </div>
 
         <div class="video-card">
           <div class="video-embed">
@@ -1393,18 +1737,28 @@
 
         <div class="video-card">
           <div class="video-embed">
-            <a class="yt-thumb-link" href="https://www.youtube.com/watch?v=JX-F8MY6nvo" target="_blank" rel="noopener">
-              <img src="https://img.youtube.com/vi/JX-F8MY6nvo/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/JX-F8MY6nvo/hqdefault.jpg'" alt="Odisseia do Desempregado" loading="lazy" />
+            <a class="yt-thumb-link" href="https://www.youtube.com/watch?v=djaB-cUw9IM" target="_blank" rel="noopener">
+              <img src="https://img.youtube.com/vi/djaB-cUw9IM/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/djaB-cUw9IM/hqdefault.jpg'" alt="MEIA 3" loading="lazy" />
               <div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
             </a>
           </div>
           <div class="video-info">
-            <h3>Curta-metragem "Odisseia do Desempregado"</h3>
-            <p>Fotografia e Som direto por Júlio.</p>
-            <div class="meta">YOUTUBE · JX-F8MY6nvo</div>
+            <h3>MEIA 3</h3>
+            <p>Dir. de Fotografia por Júlio.</p>
+            <div class="meta">YOUTUBE · djaB-cUw9IM</div>
           </div>
         </div>
 
+        <div class="video-card">
+          <div class="video-embed">
+            <iframe src="https://player.vimeo.com/video/280094688?h=37ba04f9b7" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>
+          </div>
+          <div class="video-info">
+            <h3>Nokia — Acervo das Memórias de Eugênia</h3>
+            <p>Vídeo de Júlio Mesquita. Voz de Anthônia Aranguiz.</p>
+            <div class="meta">VIMEO · 280094688</div>
+          </div>
+        </div>
 
         <div class="video-card">
           <div class="video-embed">
@@ -1428,17 +1782,6 @@
             <h3>Vídeo Carta ao Grande Irmão</h3>
             <p>Música de Jose Ferreira — Cloridrato de Paroxetina.</p>
             <div class="meta">VIMEO · 233440052</div>
-          </div>
-        </div>
-
-        <div class="video-card">
-          <div class="video-embed">
-            <iframe src="https://player.vimeo.com/video/280094688?h=37ba04f9b7" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>
-          </div>
-          <div class="video-info">
-            <h3>Nokia — Acervo das Memórias de Eugênia</h3>
-            <p>Vídeo de Júlio Mesquita. Voz de Anthônia Aranguiz.</p>
-            <div class="meta">VIMEO · 280094688</div>
           </div>
         </div>
 
@@ -1474,24 +1817,6 @@
 
         <div class="video-card">
           <div class="video-embed">
-            <a class="yt-thumb-link" href="https://www.youtube.com/watch?v=lu82BtWdo8E" target="_blank" rel="noopener">
-              <img src="https://img.youtube.com/vi/lu82BtWdo8E/maxresdefault.jpg" 
-                   onerror="this.src='https://img.youtube.com/vi/lu82BtWdo8E/hqdefault.jpg'"
-                   alt="Thumbnail do vídeo" loading="lazy" />
-              <div class="yt-play-btn">
-                <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-              </div>
-            </a>
-          </div>
-          <div class="video-info">
-            <h3>Diário de Jano — ep 0</h3>
-            <p>Vídeo de Júlio Mesquita.</p>
-            <div class="meta">YOUTUBE · lu82BtWdo8E</div>
-          </div>
-        </div>
-
-        <div class="video-card">
-          <div class="video-embed">
             <a class="yt-thumb-link" href="https://www.youtube.com/watch?v=fJv_-2ovzVQ" target="_blank" rel="noopener">
               <img src="https://img.youtube.com/vi/fJv_-2ovzVQ/maxresdefault.jpg" 
                    onerror="this.src='https://img.youtube.com/vi/fJv_-2ovzVQ/hqdefault.jpg'"
@@ -1505,20 +1830,6 @@
             <h3>Oceano Solitário</h3>
             <p>De Júlio Mesquita.</p>
             <div class="meta">YOUTUBE · fJv_-2ovzVQ</div>
-          </div>
-        </div>
-
-        <div class="video-card">
-          <div class="video-embed">
-            <a class="yt-thumb-link" href="https://www.youtube.com/watch?v=djaB-cUw9IM" target="_blank" rel="noopener">
-              <img src="https://img.youtube.com/vi/djaB-cUw9IM/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/djaB-cUw9IM/hqdefault.jpg'" alt="MEIA 3" loading="lazy" />
-              <div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
-            </a>
-          </div>
-          <div class="video-info">
-            <h3>MEIA 3</h3>
-            <p>Dir. de Fotografia por Júlio.</p>
-            <div class="meta">YOUTUBE · djaB-cUw9IM</div>
           </div>
         </div>
 
@@ -1693,6 +2004,90 @@
       </div>
     </section>
 
+    <!-- ===== ABA: GALERIA ===== -->
+    <section class="tab-panel" id="tab-galeria">
+      <div class="section-header">
+        <h2>Galeria</h2>
+        <span class="tag">FOTOGRAFIA & ARTE VISUAL</span>
+      </div>
+
+      <h3 class="gallery-sub">Fotografia</h3>
+      <div class="gallery-grid">
+          <a class="photo" href="assets/fotos/29102010076.jpg"><img src="assets/fotos/29102010076.jpg" alt="29102010076" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/DSC_0012.jpg"><img src="assets/fotos/DSC_0012.jpg" alt="DSC 0012" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/DSC_0051.jpg"><img src="assets/fotos/DSC_0051.jpg" alt="DSC 0051" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/DSC_0059.jpg"><img src="assets/fotos/DSC_0059.jpg" alt="DSC 0059" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/DSC_0121-2.jpg"><img src="assets/fotos/DSC_0121-2.jpg" alt="DSC 0121-2" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/DSC_0131.jpg"><img src="assets/fotos/DSC_0131.jpg" alt="DSC 0131" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/DSC_0200.jpg"><img src="assets/fotos/DSC_0200.jpg" alt="DSC 0200" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/DSC_0299.jpg"><img src="assets/fotos/DSC_0299.jpg" alt="DSC 0299" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/DSC_0839.jpg"><img src="assets/fotos/DSC_0839.jpg" alt="DSC 0839" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/DSC_0885.jpg"><img src="assets/fotos/DSC_0885.jpg" alt="DSC 0885" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/Ponto_de_Onibus.jpg"><img src="assets/fotos/Ponto_de_Onibus.jpg" alt="Ponto de Onibus" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/Soldados_e_atores.jpg"><img src="assets/fotos/Soldados_e_atores.jpg" alt="Soldados e atores" loading="lazy" /></a>
+          <a class="photo" href="assets/fotos/sarrabeat2.2.jpg"><img src="assets/fotos/sarrabeat2.2.jpg" alt="sarrabeat2.2" loading="lazy" /></a>
+      </div>
+
+      <h3 class="gallery-sub">Visuais</h3>
+      <div class="gallery-grid">
+          <a class="photo" href="assets/visuais/Flyer_sarrabeat4.jpg"><img src="assets/visuais/Flyer_sarrabeat4.jpg" alt="Flyer sarrabeat4" loading="lazy" /></a>
+          <a class="photo" href="assets/visuais/colagem1.jpg"><img src="assets/visuais/colagem1.jpg" alt="colagem1" loading="lazy" /></a>
+          <a class="photo" href="assets/visuais/colagem2.jpg"><img src="assets/visuais/colagem2.jpg" alt="colagem2" loading="lazy" /></a>
+      </div>
+
+      <h3 class="gallery-sub">Vídeos</h3>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-embed">
+            <a class="yt-thumb-link" href="https://youtu.be/kpeFcziIA_0" target="_blank" rel="noopener">
+              <img src="https://img.youtube.com/vi/kpeFcziIA_0/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/kpeFcziIA_0/hqdefault.jpg'" alt="Seu João Mesquita" loading="lazy" />
+              <div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            </a>
+          </div>
+          <div class="video-info">
+            <h3>Seu João Mesquita</h3>
+            <div class="meta">YOUTUBE · kpeFcziIA_0</div>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-embed">
+            <video controls preload="none" poster="assets/video/julioglitch2.jpg" style="width:100%;height:100%;object-fit:cover;background:#000;">
+              <source src="assets/video/julioglitch2.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <div class="video-info">
+            <h3>Júlio Glitch 2</h3>
+            <div class="meta">ARTE VISUAL · GLITCH</div>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-embed">
+            <video controls preload="none" poster="assets/video/julioglitch1.jpg" style="width:100%;height:100%;object-fit:cover;background:#000;">
+              <source src="assets/video/julioglitch1.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <div class="video-info">
+            <h3>Júlio Glitch 1</h3>
+            <div class="meta">ARTE VISUAL · GLITCH</div>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-embed">
+            <video controls preload="none" poster="assets/video/flyer2_final.jpg" style="width:100%;height:100%;object-fit:contain;background:#000;">
+              <source src="assets/video/flyer2_final.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <div class="video-info">
+            <h3>Flyer Sarrabeat</h3>
+            <div class="meta">MOTION · FLYER ANIMADO</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== ABA: BIO & CONTATO ===== -->
     <section class="tab-panel" id="tab-bio">
       <div class="section-header">
@@ -1710,10 +2105,13 @@
           <p class="subtitle">&#x2625; &nbsp;Editor de Vídeo & Criador com IA</p>
 
           <p>
-            <em>Júlio Mesquita</em> é um profissional da comunicação com <em>três anos de experiência em emissora de TV</em> (Rede TV), onde desenvolveu um olhar apurado para narrativas visuais — nas ilhas de edição, nas operações de câmera e na construção de identidades visuais.
+            <em>Júlio Mesquita</em> é um profissional da comunicação e do audiovisual, formado em <em>Audiovisual pelo Centro Universitário SENAC</em> (DRT 0055953/SP), com estudos concentrados em pós-produção, fotografia e produção.
           </p>
           <p>
-            Seu domínio técnico abrange desde os tradicionais <em>Premiere, Final Cut e Avid</em> até as ferramentas criativas do pacote Adobe e DaVinci Resolve. Entusiasta da aplicação de <em>inteligência artificial na criação audiovisual</em>, utiliza IA para potencializar narrativas e contar histórias de forma inovadora. Possui ainda habilidades em <em>modelagem 3D</em> (Blender / 3DS Max).
+            Sua trajetória profissional no audiovisual começou em <em>2018</em>, como estagiário no <em>Museu da Pessoa</em>, onde trabalhou com digitalização de acervo analógico e decupagem de histórias de vida. Em seguida, passou <em>três anos como editor de vídeo na RedeTV!</em>, atuando na edição e finalização de VTs e programas — entre eles o Festival de Prêmios e o Ultra Show — e desenvolvendo um olhar apurado para narrativas visuais.
+          </p>
+          <p>
+            Atualmente, cria <em>vídeos feitos com IA para e-commerce</em> a partir de um fluxo de trabalho automatizado que desenvolveu, além de projetos autorais com inteligência artificial. Seu domínio técnico abrange desde os tradicionais <em>Premiere, Final Cut e Avid</em> até o pacote Adobe e o DaVinci Resolve, com habilidades complementares em motion e <em>modelagem 3D</em> (After Effects, Blender e 3DS Max).
           </p>
           <p>
             <em>Disponível para projetos comerciais, colaborações e residências artísticas.</em>
@@ -1731,8 +2129,17 @@
 
   <footer>
     <span class="ankh-footer">&#x2625;</span>
+    <p>
+      <a href="https://juliomelore.wixsite.com/" target="_blank" rel="noopener" style="color: var(--red); text-decoration: none; letter-spacing: 0.04em;">Portfólio antigo (Wix) &#8599;</a>
+    </p>
     <p>J. Ressureição &nbsp;·&nbsp; Todos os direitos reservados &nbsp;·&nbsp; Feito com IA</p>
   </footer>
+
+  <!-- Lightbox da Galeria -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" aria-label="Fechar">&times;</button>
+    <img src="" alt="" id="lightbox-img" />
+  </div>
 
   <script>
     // --- TAB NAVIGATION ---
@@ -1750,6 +2157,53 @@
         document.getElementById('tab-' + target).classList.add('active');
       });
     });
+
+    // --- CARROSSEL (Home) ---
+    document.querySelectorAll('.carousel-viewport').forEach(vp => {
+      const track = vp.querySelector('.carousel-track');
+      const prev = vp.querySelector('.carousel-btn.prev');
+      const next = vp.querySelector('.carousel-btn.next');
+      const step = () => {
+        const card = track.querySelector('.video-card');
+        return card ? card.getBoundingClientRect().width + 16 : 320;
+      };
+      if (prev) prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+      if (next) next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+
+      // auto-scroll suave, pausando no hover
+      let paused = false;
+      vp.addEventListener('mouseenter', () => paused = true);
+      vp.addEventListener('mouseleave', () => paused = false);
+      setInterval(() => {
+        if (paused) return;
+        if (!document.getElementById('tab-home').classList.contains('active')) return;
+        const maxScroll = track.scrollWidth - track.clientWidth - 4;
+        if (track.scrollLeft >= maxScroll) {
+          track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          track.scrollBy({ left: step(), behavior: 'smooth' });
+        }
+      }, 4000);
+    });
+
+    // --- LIGHTBOX (Galeria) ---
+    (function () {
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightbox-img');
+      if (!lb) return;
+      document.querySelectorAll('.gallery-grid .photo, .carousel-track .photo').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          lbImg.src = a.getAttribute('href');
+          lbImg.alt = a.querySelector('img') ? a.querySelector('img').alt : '';
+          lb.classList.add('open');
+        });
+      });
+      const close = () => { lb.classList.remove('open'); lbImg.src = ''; };
+      lb.addEventListener('click', close);
+      lb.querySelector('.lb-close').addEventListener('click', close);
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    })();
   </script>
 
 </body>
