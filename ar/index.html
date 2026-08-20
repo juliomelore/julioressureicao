@@ -11,7 +11,11 @@
 
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    html,body { width:100%; height:100%; overflow:hidden; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; background:#000; }
+    /* IMPORTANTE: fundo transparente — um fundo opaco esconde o vídeo da câmera (z-index -2) do AR.js */
+    html,body { width:100%; height:100%; overflow:hidden; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; background:transparent; }
+    /* o vídeo da câmera preenche a tela sem barras pretas */
+    #arjs-video, video { object-fit:cover !important; }
+    .a-canvas { background:transparent !important; }
 
     /* ---------- Overlay 2D (marca + instrução) ---------- */
     #ui {
@@ -150,6 +154,15 @@
         marker.addEventListener('markerFound', function(){ hint.style.opacity = '0'; });
         marker.addEventListener('markerLost',  function(){ hint.style.opacity = '1'; });
       }
+      // Aviso amigável se a câmera não iniciar (permissão negada, navegador embutido, etc.)
+      setTimeout(function(){
+        var v = document.querySelector('video');
+        var ok = v && v.srcObject && !v.paused && v.videoWidth > 0;
+        if(!ok){
+          hint.innerHTML = 'Não consegui acessar a <b>câmera</b>. Permita o acesso quando o navegador pedir e recarregue a página. Se abriu por um app (Instagram/WhatsApp), toque em <b>“Abrir no navegador”</b> (Chrome/Safari).';
+          hint.style.opacity = '1';
+        }
+      }, 7000);
     });
   </script>
 </body>
