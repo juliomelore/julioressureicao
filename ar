@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>J. Ressureição — Portfólio em AR</title>
+
+  <!-- A-Frame + AR.js (bibliotecas locais — funcionam offline / sem depender de CDN) -->
+  <script src="./vendor/aframe.js"></script>
+  <script src="./vendor/aframe-ar.js"></script>
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html,body { width:100%; height:100%; overflow:hidden; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; background:#000; }
+
+    /* ---------- Overlay 2D (marca + instrução) ---------- */
+    #ui {
+      position:fixed; inset:0; z-index:10; pointer-events:none;
+      display:flex; flex-direction:column; justify-content:space-between;
+    }
+    #brand {
+      margin:14px; align-self:flex-start;
+      background:rgba(10,10,12,.55); backdrop-filter:blur(6px);
+      border:1px solid rgba(255,255,255,.14); border-radius:14px;
+      padding:10px 14px; color:#fff;
+    }
+    #brand .ankh { font-size:22px; line-height:1; color:#e8c46a; }
+    #brand h1 { font-size:15px; letter-spacing:.5px; font-weight:700; }
+    #brand p  { font-size:11px; opacity:.8; margin-top:2px; }
+
+    #hint {
+      margin:0 14px 18px; align-self:center; text-align:center;
+      background:rgba(10,10,12,.6); backdrop-filter:blur(6px);
+      border:1px solid rgba(255,255,255,.14); border-radius:14px;
+      padding:10px 16px; color:#fff; font-size:12.5px; max-width:340px;
+      transition:opacity .4s ease;
+    }
+    #hint b { color:#e8c46a; }
+
+    /* botão de reintentar câmera / fallback */
+    #openTop { position:fixed; top:0; left:0; right:0; z-index:9; }
+  </style>
+</head>
+<body>
+
+  <!-- ================= UI 2D ================= -->
+  <div id="ui">
+    <div id="brand">
+      <div class="ankh">&#9765;</div>
+      <h1>J. RESSUREIÇÃO</h1>
+      <p>Editor de Vídeo &amp; Criador com IA</p>
+    </div>
+    <div id="hint">
+      Aponte a câmera para o <b>marcador Hiro</b> impresso (ou numa outra tela).
+      Quando o cartão aparecer, <b>toque</b> nos botões.
+    </div>
+  </div>
+
+  <!-- ================= CENA AR ================= -->
+  <a-scene
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true; colorManagement: true;"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; trackingMethod: best; cameraParametersUrl: ./vendor/camera_para.dat;">
+
+    <!-- Fontes/materiais -->
+    <a-assets></a-assets>
+
+    <!-- Conteúdo ancorado no marcador Hiro -->
+    <a-marker type="pattern" url="./vendor/pattern-hiro.patt" id="marker" smooth="true" smoothCount="8" smoothTolerance="0.01" smoothThreshold="4">
+
+      <!-- Grupo em pé, "de frente" para quem olha (levemente inclinado) -->
+      <a-entity position="0 0 0" rotation="-90 0 0">
+        <a-entity position="0 0 0.02" rotation="90 0 0">
+
+          <!-- Painel de fundo (cartão) -->
+          <a-plane position="0 1.15 0" width="2.15" height="2.7"
+                   color="#0e0e12" opacity="0.94"
+                   material="shader: flat"></a-plane>
+          <a-plane position="0 1.15 -0.01" width="2.28" height="2.83"
+                   color="#e8c46a" opacity="0.9"
+                   material="shader: flat"></a-plane>
+
+          <!-- Cabeçalho -->
+          <a-text value="J. RESSUREICAO" align="center" color="#ffffff"
+                  position="0 2.18 0.02" width="3.1" font="exo2bold"></a-text>
+          <a-text value="Editor de Video  &amp;  Criador com IA" align="center" color="#e8c46a"
+                  position="0 1.9 0.02" width="2.5"></a-text>
+
+          <!-- Painel Showreel (clicável) -->
+          <a-entity class="clickable" data-url="https://www.youtube.com/watch?v=x-H7hxf0GqU" position="0 1.25 0.03">
+            <a-plane width="1.75" height="0.98" color="#141821" material="shader: flat"></a-plane>
+            <a-plane width="1.75" height="0.98" color="#e8c46a" opacity="0.0" class="clickable"
+                     data-url="https://www.youtube.com/watch?v=x-H7hxf0GqU"></a-plane>
+            <!-- Botão play -->
+            <a-circle radius="0.2" color="#e8c46a" position="0 0.05 0.01"></a-circle>
+            <a-triangle color="#0e0e12" position="0.03 0.05 0.02"
+                        vertex-a="0 0.09 0" vertex-b="0 -0.09 0" vertex-c="0.12 0 0"></a-triangle>
+            <a-text value="SHOWREEL" align="center" color="#ffffff" position="0 -0.34 0.02" width="2.2"></a-text>
+          </a-entity>
+
+          <!-- Botões de link -->
+          <!-- Site -->
+          <a-entity class="clickable" data-url="https://juliomelore.github.io/julioressureicao/" position="0 0.42 0.03">
+            <a-plane width="1.75" height="0.34" color="#e8c46a" material="shader: flat"></a-plane>
+            <a-text value="VER PORTFOLIO" align="center" color="#0e0e12" position="0 0 0.02" width="2.4"></a-text>
+          </a-entity>
+          <!-- LinkedIn -->
+          <a-entity class="clickable" data-url="https://www.linkedin.com/in/juliomelore" position="0 0.0 0.03">
+            <a-plane width="1.75" height="0.34" color="#1b2330" material="shader: flat"></a-plane>
+            <a-text value="LINKEDIN" align="center" color="#ffffff" position="0 0 0.02" width="2.4"></a-text>
+          </a-entity>
+          <!-- E-mail -->
+          <a-entity class="clickable" data-url="mailto:juliomelore@gmail.com" position="0 -0.42 0.03">
+            <a-plane width="1.75" height="0.34" color="#1b2330" material="shader: flat"></a-plane>
+            <a-text value="E-MAIL" align="center" color="#ffffff" position="0 0 0.02" width="2.4"></a-text>
+          </a-entity>
+
+          <!-- Rodapé -->
+          <a-text value="feito com IA" align="center" color="#7a7f8a"
+                  position="0 -0.78 0.02" width="2.0"></a-text>
+
+        </a-entity>
+      </a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+
+    <!-- Raycaster por toque na tela -->
+    <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable; far: 100"></a-entity>
+  </a-scene>
+
+  <script>
+    // Abre o link do elemento tocado
+    function wireClicks(){
+      document.querySelectorAll('.clickable').forEach(function(el){
+        el.addEventListener('click', function(){
+          var url = el.getAttribute('data-url');
+          if(url){ window.open(url, '_blank'); }
+        });
+      });
+    }
+    window.addEventListener('DOMContentLoaded', wireClicks);
+
+    // Esconde a dica quando o marcador é encontrado
+    document.addEventListener('DOMContentLoaded', function(){
+      var marker = document.getElementById('marker');
+      var hint = document.getElementById('hint');
+      if(marker){
+        marker.addEventListener('markerFound', function(){ hint.style.opacity = '0'; });
+        marker.addEventListener('markerLost',  function(){ hint.style.opacity = '1'; });
+      }
+    });
+  </script>
+</body>
+</html>
+
+# J. Ressureição — Portfólio em Realidade Aumentada (AR.js)
+
+Experiência de **web-AR** feita com **AR.js + A-Frame**, no estilo do AR.js Studio.
+Ao apontar a câmera do celular para o **marcador Hiro**, aparece um cartão AR com:
+
+- ▶ **Showreel** (toque abre o vídeo em destaque no YouTube)
+- **Ver Portfólio** → seu site
+- **LinkedIn**
+- **E-mail**
+- Nome + título ("Editor de Vídeo & Criador com IA")
+
+Tudo é **web**: funciona direto no navegador do celular, sem instalar app.
+
+---
+
+## 📁 Conteúdo da pasta
+
+```
+ar-julio/
+├── index.html              ← a página AR (é o que abre no celular)
+├── marcador-AR.png         ← marcador Hiro pronto pra imprimir (com QR e instruções)
+├── assets/
+│   ├── hiro.png            ← só o marcador Hiro (imagem limpa)
+│   └── qr.png              ← QR code que aponta pra experiência
+└── vendor/                 ← bibliotecas locais (não precisa mexer)
+    ├── aframe.js
+    ├── aframe-ar.js
+    ├── camera_para.dat     ← calibração da câmera
+    └── pattern-hiro.patt   ← padrão do marcador Hiro
+```
+
+---
+
+## 🚀 Como colocar no ar (GitHub Pages)
+
+Você já usa GitHub Pages no `juliomelore.github.io/julioressureicao`. É só publicar esta pasta como `/ar`:
+
+1. No repositório `julioressureicao`, crie uma pasta chamada **`ar`**.
+2. Suba **todo o conteúdo** desta pasta pra dentro dela (mantendo `assets/` e `vendor/`).
+3. Aguarde ~1 min. A experiência fica em:
+   **https://juliomelore.github.io/julioressureicao/ar/**
+
+> ⚠️ AR na web **exige HTTPS** — o GitHub Pages já é HTTPS, então está ok.
+> Testar por `file://` (dois cliques no arquivo) **não funciona** por causa disso.
+
+O QR code (`assets/qr.png` e o do pôster) já aponta pra esse endereço.
+
+---
+
+## 📱 Como usar / testar
+
+1. Abra **https://juliomelore.github.io/julioressureicao/ar/** no celular.
+2. Permita o acesso à **câmera**.
+3. Aponte pra o **marcador Hiro** — pode ser:
+   - o pôster impresso (`marcador-AR.png`), ou
+   - o marcador aberto em **outra tela** (abra `assets/hiro.png` no computador e aponte o celular pra ele).
+4. O cartão AR aparece por cima do marcador. **Toque** nos botões.
+
+Dica: boa iluminação e o marcador inteiro dentro do quadro = rastreio mais estável.
+
+---
+
+## ✏️ Como personalizar (abrir `index.html`)
+
+**Trocar o vídeo do showreel:** procure por
+`data-url="https://www.youtube.com/watch?v=x-H7hxf0GqU"` (está no bloco do Showreel)
+e troque pelo link do vídeo que você quiser destacar.
+
+**Trocar/!adicionar links:** cada botão é um bloco `<a-entity class="clickable" data-url="...">`.
+Edite o `data-url` (ex.: `mailto:`, um `https://wa.me/55...` de WhatsApp, Instagram, etc.)
+e o texto dentro do `<a-text value="...">`.
+
+**Cores:** o dourado do cartão é `#e8c46a` e o fundo escuro é `#0e0e12` / `#141821`.
+Troque esses valores no `<style>` e nos `color="..."` dos planos.
+
+### (Opcional) Tocar o vídeo DENTRO da AR
+Hoje o showreel **abre o YouTube** ao toque (mais simples e leve).
+Se quiser o vídeo tocando **na própria cena AR**, você precisa de um arquivo **.mp4**
+(YouTube não pode ser usado como textura). Coloque `showreel.mp4` em `assets/` e me chame
+que eu troco o painel por um `<a-video>` que dá play sozinho.
+
+---
+
+## 🔌 Sobre conexão
+Bibliotecas, calibração e o padrão Hiro estão **locais** (na pasta `vendor/`), então
+funcionam mesmo com internet ruim. Só as **fontes do texto** são baixadas do CDN oficial
+do A-Frame na hora (arquivos minúsculos). Se você for usar em evento com Wi-Fi instável e
+quiser 100% offline, me avisa que eu "asso" os textos como imagem.
+
+---
+
+## 🧩 E o AR.js Studio?
+Este projeto usa **a mesma tecnologia** que o AR.js Studio gera (AR.js + A-Frame), só que
+como arquivo próprio — você fica com controle total e hospeda no seu domínio. Se depois
+quiser recriar/ajustar no Studio (ar-js-org.github.io/studio), o conceito é o mesmo:
+marcador → conteúdo (vídeo/texto/botões).
+
+feito com IA · AR.js + A-Frame
