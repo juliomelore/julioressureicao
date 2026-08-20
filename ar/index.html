@@ -6,15 +6,15 @@
   <title>Júlio Mesquita — Portfólio em AR</title>
 
   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     html,body { width:100%; height:100%; overflow:hidden; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; background:transparent; }
     #arjs-video, video { object-fit:cover !important; }
     .a-canvas { background:transparent !important; }
+    .mindar-ui-overlay { display:none !important; } /* esconde loading/scan padrão */
 
-    /* ---------- Overlay fixo (independe da câmera) ---------- */
     #ui { position:fixed; inset:0; z-index:10; pointer-events:none; }
     #brand { position:absolute; top:14px; left:14px; background:rgba(10,10,12,.5); backdrop-filter:blur(6px);
              border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:9px 13px; color:#fff; }
@@ -26,7 +26,6 @@
             border-radius:14px; padding:10px 16px; color:#fff; font-size:12.5px; max-width:330px; transition:opacity .4s ease; }
     #hint b { color:#e8c46a; }
 
-    /* Botões fixos: Site + WhatsApp (sempre visíveis) */
     #fixedTop { position:absolute; top:14px; right:14px; display:flex; gap:10px; align-items:center; pointer-events:auto; }
     #siteBtn { background:#e8c46a; color:#0e0e12; font-weight:700; font-size:12.5px; text-decoration:none;
                padding:10px 14px; border-radius:999px; box-shadow:0 2px 10px rgba(0,0,0,.35); white-space:nowrap; }
@@ -34,7 +33,6 @@
              box-shadow:0 2px 10px rgba(0,0,0,.35); text-decoration:none; }
     #waBtn svg { width:26px; height:26px; display:block; }
 
-    /* Barra de controles de vídeo (ícones) */
     #controls { position:absolute; left:50%; bottom:22px; transform:translateX(-50%); display:none; gap:10px; align-items:center;
                 background:rgba(10,10,12,.62); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.14);
                 border-radius:999px; padding:8px 12px; pointer-events:auto; }
@@ -47,22 +45,16 @@
 <body>
 
   <div id="ui">
-    <div id="brand">
-      <h1>JÚLIO MESQUITA</h1>
-      <p>Editor de Vídeo &amp; Criador com IA</p>
-    </div>
-
+    <div id="brand"><h1>JÚLIO MESQUITA</h1><p>Editor de Vídeo &amp; Criador com IA</p></div>
     <div id="fixedTop">
       <a id="siteBtn" href="https://juliomelore.github.io/julioressureicao/" target="_blank" rel="noopener">Site completo</a>
       <a id="waBtn" href="https://wa.me/5511989531368" target="_blank" rel="noopener" aria-label="WhatsApp">
         <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 .8C7.5.8.7 7.7.7 16.1c0 2.8.7 5.4 2 7.7L.6 31.4l7.8-2c2.2 1.2 4.8 1.9 7.5 1.9 8.5 0 15.4-6.9 15.4-15.3S24.5.8 16 .8Zm0 27.9c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.6 1.2 1.2-4.5-.3-.5c-1.3-2-2-4.4-2-6.9C3.1 9.1 8.9 3.4 16 3.4c3.4 0 6.6 1.3 9 3.7 2.4 2.4 3.7 5.6 3.7 9 0 7-5.8 12.6-12.7 12.6Zm7.1-9.4c-.4-.2-2.3-1.1-2.6-1.3-.3-.1-.6-.2-.9.2-.3.4-1 1.3-1.2 1.5-.2.2-.4.3-.8.1-2.3-1.1-3.8-2-5.3-4.6-.4-.7.4-.6 1.1-2 .1-.2 0-.4 0-.6 0-.2-.9-2.1-1.2-2.9-.3-.7-.6-.6-.9-.6h-.7c-.2 0-.6.1-1 .5-.3.4-1.3 1.3-1.3 3.1s1.3 3.6 1.5 3.9c.2.3 2.6 4 6.3 5.6 2.3 1 3.2 1.1 4.4.9.7-.1 2.3-.9 2.6-1.9.3-.9.3-1.7.2-1.9-.1-.2-.3-.3-.7-.5Z"/></svg>
       </a>
     </div>
-
-    <div id="hint">Aponte a câmera para o <b>marcador ankh</b>. O vídeo aparece por cima.</div>
+    <div id="hint">Aponte a câmera para o <b>cartão</b> (o de Portfólio interativo). O vídeo aparece por cima.</div>
   </div>
 
-  <!-- Controles de vídeo (aparecem quando o marcador é detectado) -->
   <div id="controls">
     <button id="pcPrev" title="Voltar">⏮</button>
     <button id="pcPlay" title="Play/Pause">▶</button>
@@ -71,39 +63,36 @@
   </div>
 
   <a-scene
-    vr-mode-ui="enabled: false"
-    renderer="logarithmicDepthBuffer: true; colorManagement: true;"
-    embedded
-    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; trackingMethod: best; cameraParametersUrl: https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/data/data/camera_para.dat;">
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: no; uiLoading: no; uiError: no; filterMinCF: 0.0001; filterBeta: 0.01; missTolerance: 8; warmupTolerance: 3"
+    color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" embedded>
 
     <a-assets>
       <video id="reel" src="./video_drone.mp4" preload="auto" muted playsinline webkit-playsinline crossorigin="anonymous"></video>
     </a-assets>
 
-    <a-marker type="pattern" url="./pattern-ankh.patt" id="marker"
-              smooth="true" smoothCount="15" smoothTolerance="0.02" smoothThreshold="5">
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- Cartão deitado no plano do ankh, cobrindo o marcador -->
-      <a-entity id="card" rotation="-90 0 0" position="0 0.01 0" scale="1 1 1">
+    <!-- Conteúdo ancorado no cartão (índice 0). O cartão tem largura 1; altura ~0.571 (1050x600). -->
+    <a-entity id="target" mindar-image-target="targetIndex: 0">
 
-        <a-video id="vid" src="#reel" width="1.15" height="2.04" position="0 0 0.02"></a-video>
+      <!-- Vídeo (9:16) centralizado sobre o cartão -->
+      <a-video id="vid" src="#reel" width="0.36" height="0.64" position="0 0 0.001"></a-video>
 
-        <a-text value="JULIO MESQUITA" align="center" color="#ffffff" position="0 1.16 0.03" width="2.4" font="exo2bold"></a-text>
+      <a-text value="JULIO MESQUITA" align="center" color="#111111" position="0 0.37 0.002" width="1.1" font="exo2bold"></a-text>
 
-        <!-- Botões que ficam no cartão AR -->
-        <a-entity class="clickable" data-url="https://www.linkedin.com/in/juliomelore" position="1.05 0.22 0.03">
-          <a-plane width="0.95" height="0.32" color="#1b2330" material="shader: flat"></a-plane>
-          <a-text value="LINKEDIN" align="center" color="#ffffff" position="0 0 0.02" width="1.7"></a-text>
-        </a-entity>
-        <a-entity class="clickable" data-url="mailto:juliomelore@gmail.com" position="1.05 -0.20 0.03">
-          <a-plane width="0.95" height="0.32" color="#1b2330" material="shader: flat"></a-plane>
-          <a-text value="E-MAIL" align="center" color="#ffffff" position="0 0 0.02" width="1.7"></a-text>
-        </a-entity>
-
+      <!-- LinkedIn / E-mail à direita do vídeo -->
+      <a-entity class="clickable" data-url="https://www.linkedin.com/in/juliomelore" position="0.33 0.09 0.002">
+        <a-plane width="0.30" height="0.10" color="#1b2330" material="shader: flat"></a-plane>
+        <a-text value="LINKEDIN" align="center" color="#ffffff" position="0 0 0.001" width="0.62"></a-text>
       </a-entity>
-    </a-marker>
+      <a-entity class="clickable" data-url="mailto:juliomelore@gmail.com" position="0.33 -0.06 0.002">
+        <a-plane width="0.30" height="0.10" color="#1b2330" material="shader: flat"></a-plane>
+        <a-text value="E-MAIL" align="center" color="#ffffff" position="0 0 0.001" width="0.62"></a-text>
+      </a-entity>
 
-    <a-entity camera></a-entity>
+    </a-entity>
+
     <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable; far: 100"></a-entity>
   </a-scene>
 
@@ -122,54 +111,42 @@
       elPlay.textContent = '⏸';
     }
     reel.addEventListener('ended', function(){ playIndex(idx + 1); });
-
-    function togglePlay(){
-      if (reel.paused){ var p=reel.play(); if(p&&p.catch)p.catch(function(){}); elPlay.textContent='⏸'; }
-      else { reel.pause(); elPlay.textContent='▶'; }
-    }
-    function toggleSound(){
-      reel.muted = !reel.muted;
-      elSound.textContent = reel.muted ? '🔇' : '🔊';
-      if (!reel.muted){ var p=reel.play(); if(p&&p.catch)p.catch(function(){}); elPlay.textContent='⏸'; }
-    }
-
+    function togglePlay(){ if (reel.paused){ reel.play().catch(function(){}); elPlay.textContent='⏸'; } else { reel.pause(); elPlay.textContent='▶'; } }
+    function toggleSound(){ reel.muted=!reel.muted; elSound.textContent=reel.muted?'🔇':'🔊'; if(!reel.muted){ reel.play().catch(function(){}); elPlay.textContent='⏸'; } }
     document.getElementById('pcPrev').addEventListener('click', function(){ playIndex(idx-1); });
     document.getElementById('pcNext').addEventListener('click', function(){ playIndex(idx+1); });
     elPlay.addEventListener('click', togglePlay);
     elSound.addEventListener('click', toggleSound);
 
-    // Cliques nos botões do cartão AR (links)
     function wireClicks(){
       document.querySelectorAll('.clickable').forEach(function(el){
-        el.addEventListener('click', function(){
-          var url = el.getAttribute('data-url'); if (url) window.open(url,'_blank');
-        });
+        el.addEventListener('click', function(){ var url=el.getAttribute('data-url'); if(url) window.open(url,'_blank'); });
       });
     }
 
     document.addEventListener('DOMContentLoaded', function(){
       wireClicks();
-      var marker = document.getElementById('marker');
+      var target = document.getElementById('target');
       var hint = document.getElementById('hint');
-      if (marker){
-        marker.addEventListener('markerFound', function(){
-          hint.style.opacity='0'; elControls.style.display='flex';
-          var p=reel.play(); if(p&&p.catch)p.catch(function(){}); elPlay.textContent='⏸';
-        });
-        marker.addEventListener('markerLost', function(){
-          hint.style.opacity='1'; elControls.style.display='none'; reel.pause(); elPlay.textContent='▶';
-        });
-      }
+      target.addEventListener('targetFound', function(){
+        hint.style.opacity='0'; elControls.style.display='flex';
+        reel.play().catch(function(){}); elPlay.textContent='⏸';
+      });
+      target.addEventListener('targetLost', function(){
+        hint.style.opacity='1'; elControls.style.display='none'; reel.pause(); elPlay.textContent='▶';
+      });
       playIndex(0);
 
       setTimeout(function(){
-        var cam = document.querySelector('video#arjs-video') || document.querySelectorAll('video')[1];
-        var ok = cam && cam.srcObject && !cam.paused && cam.videoWidth > 0;
+        var cam = document.querySelector('video');
+        var vids = document.querySelectorAll('video');
+        var camEl = vids.length>1 ? vids[vids.length-1] : null;
+        var ok = camEl && camEl.srcObject && !camEl.paused && camEl.videoWidth>0;
         if(!ok){
-          hint.innerHTML = 'Não consegui acessar a <b>câmera</b>. Permita o acesso e recarregue. Se abriu por um app (Instagram/WhatsApp), toque em <b>“Abrir no navegador”</b>.';
+          hint.innerHTML = 'Não consegui acessar a <b>câmera</b>. Permita o acesso e recarregue. Se abriu por um app, toque em <b>“Abrir no navegador”</b>.';
           hint.style.opacity='1';
         }
-      }, 7000);
+      }, 8000);
     });
   </script>
 </body>
