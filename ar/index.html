@@ -54,42 +54,43 @@
 
     <a-marker type="pattern" url="./pattern-ankh.patt" id="marker" smooth="true" smoothCount="8" smoothTolerance="0.01" smoothThreshold="4">
 
-      <!-- Cartão SEM borda, centralizado no eixo do ankh. Ajuste o 'scale' para aumentar/diminuir tudo. -->
-      <a-entity id="card" position="0 0 0" scale="0.62 0.62 0.62">
+      <!-- Cartão DEITADO no mesmo plano do ankh (rotação -90 no X), cobrindo o marcador.
+           Ajuste 'scale' para aumentar/diminuir tudo. Se aparecer de cabeça pra baixo, troque -90 por 90. -->
+      <a-entity id="card" rotation="-90 0 0" position="0 0.01 0" scale="1 1 1">
 
         <!-- Vídeo (9:16) cobrindo o marcador -->
-        <a-video id="vid" src="#reel" width="1.35" height="2.4" position="0 1.7 0" class="clickable"
+        <a-video id="vid" src="#reel" width="1.15" height="2.04" position="0 0 0.02" class="clickable"
                  data-action="sound"></a-video>
 
-        <!-- Título discreto sobre o topo do vídeo -->
-        <a-text value="J. RESSUREICAO" align="center" color="#ffffff" position="0 3.02 0.02" width="3.0" font="exo2bold"></a-text>
+        <!-- Título (borda de cima, lado oposto ao usuário) -->
+        <a-text value="J. RESSUREICAO" align="center" color="#ffffff" position="0 1.16 0.03" width="2.4" font="exo2bold"></a-text>
 
-        <!-- Botão PRÓXIMO (troca de vídeo) -->
-        <a-entity class="clickable" data-action="next" position="0 0.28 0.03">
-          <a-plane width="1.35" height="0.32" color="#e8c46a" material="shader: flat"></a-plane>
-          <a-text value="PROXIMO  >" align="center" color="#0e0e12" position="0 0 0.02" width="2.4"></a-text>
+        <!-- Botão PRÓXIMO (borda de baixo, perto do usuário) -->
+        <a-entity class="clickable" data-action="next" position="0 -1.18 0.03">
+          <a-plane width="1.15" height="0.28" color="#e8c46a" material="shader: flat"></a-plane>
+          <a-text value="PROXIMO  >" align="center" color="#0e0e12" position="0 0 0.02" width="2.0"></a-text>
         </a-entity>
 
-        <!-- Coluna de botões (à direita do vídeo) -->
+        <!-- Coluna de botões à direita do vídeo -->
         <!-- Site completo -->
-        <a-entity class="clickable" data-url="https://juliomelore.github.io/julioressureicao/" position="1.38 2.45 0.03">
-          <a-plane width="1.25" height="0.34" color="#e8c46a" material="shader: flat"></a-plane>
-          <a-text value="SITE COMPLETO" align="center" color="#0e0e12" position="0 0 0.02" width="2.05"></a-text>
+        <a-entity class="clickable" data-url="https://juliomelore.github.io/julioressureicao/" position="1.12 0.69 0.03">
+          <a-plane width="1.0" height="0.32" color="#e8c46a" material="shader: flat"></a-plane>
+          <a-text value="SITE COMPLETO" align="center" color="#0e0e12" position="0 0 0.02" width="1.75"></a-text>
         </a-entity>
         <!-- WhatsApp -->
-        <a-entity class="clickable" data-url="https://wa.me/5511989531368" position="1.38 2.03 0.03">
-          <a-plane width="1.25" height="0.34" color="#25D366" material="shader: flat"></a-plane>
-          <a-text value="WHATSAPP" align="center" color="#0b1f12" position="0 0 0.02" width="2.05"></a-text>
+        <a-entity class="clickable" data-url="https://wa.me/5511989531368" position="1.12 0.31 0.03">
+          <a-plane width="1.0" height="0.32" color="#25D366" material="shader: flat"></a-plane>
+          <a-text value="WHATSAPP" align="center" color="#0b1f12" position="0 0 0.02" width="1.75"></a-text>
         </a-entity>
         <!-- LinkedIn -->
-        <a-entity class="clickable" data-url="https://www.linkedin.com/in/juliomelore" position="1.38 1.61 0.03">
-          <a-plane width="1.25" height="0.34" color="#1b2330" material="shader: flat"></a-plane>
-          <a-text value="LINKEDIN" align="center" color="#ffffff" position="0 0 0.02" width="2.05"></a-text>
+        <a-entity class="clickable" data-url="https://www.linkedin.com/in/juliomelore" position="1.12 -0.07 0.03">
+          <a-plane width="1.0" height="0.32" color="#1b2330" material="shader: flat"></a-plane>
+          <a-text value="LINKEDIN" align="center" color="#ffffff" position="0 0 0.02" width="1.75"></a-text>
         </a-entity>
         <!-- E-mail -->
-        <a-entity class="clickable" data-url="mailto:juliomelore@gmail.com" position="1.38 1.19 0.03">
-          <a-plane width="1.25" height="0.34" color="#1b2330" material="shader: flat"></a-plane>
-          <a-text value="E-MAIL" align="center" color="#ffffff" position="0 0 0.02" width="2.05"></a-text>
+        <a-entity class="clickable" data-url="mailto:juliomelore@gmail.com" position="1.12 -0.45 0.03">
+          <a-plane width="1.0" height="0.32" color="#1b2330" material="shader: flat"></a-plane>
+          <a-text value="E-MAIL" align="center" color="#ffffff" position="0 0 0.02" width="1.75"></a-text>
         </a-entity>
 
       </a-entity>
