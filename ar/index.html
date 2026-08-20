@@ -5,161 +5,160 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>J. Ressureição — Portfólio em AR</title>
 
-  <!-- A-Frame + AR.js (carregados via CDN — versão leve, só precisa deste HTML + o .patt) -->
+  <!-- A-Frame + AR.js (CDN) -->
   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
 
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    /* IMPORTANTE: fundo transparente — um fundo opaco esconde o vídeo da câmera (z-index -2) do AR.js */
+    /* IMPORTANTE: fundo transparente — fundo opaco esconde o vídeo da câmera (z-index -2) */
     html,body { width:100%; height:100%; overflow:hidden; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; background:transparent; }
-    /* o vídeo da câmera preenche a tela sem barras pretas */
     #arjs-video, video { object-fit:cover !important; }
     .a-canvas { background:transparent !important; }
 
-    /* ---------- Overlay 2D (marca + instrução) ---------- */
-    #ui {
-      position:fixed; inset:0; z-index:10; pointer-events:none;
-      display:flex; flex-direction:column; justify-content:space-between;
-    }
-    #brand {
-      margin:14px; align-self:flex-start;
-      background:rgba(10,10,12,.55); backdrop-filter:blur(6px);
-      border:1px solid rgba(255,255,255,.14); border-radius:14px;
-      padding:10px 14px; color:#fff;
-    }
-    #brand .ankh { font-size:22px; line-height:1; color:#e8c46a; }
-    #brand h1 { font-size:15px; letter-spacing:.5px; font-weight:700; }
+    /* ---------- Overlay 2D ---------- */
+    #ui { position:fixed; inset:0; z-index:10; pointer-events:none; display:flex; flex-direction:column; justify-content:space-between; }
+    #brand { margin:14px; align-self:flex-start; background:rgba(10,10,12,.5); backdrop-filter:blur(6px);
+             border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:9px 13px; color:#fff; }
+    #brand h1 { font-size:14px; letter-spacing:.5px; font-weight:700; }
     #brand p  { font-size:11px; opacity:.8; margin-top:2px; }
-
-    #hint {
-      margin:0 14px 18px; align-self:center; text-align:center;
-      background:rgba(10,10,12,.6); backdrop-filter:blur(6px);
-      border:1px solid rgba(255,255,255,.14); border-radius:14px;
-      padding:10px 16px; color:#fff; font-size:12.5px; max-width:340px;
-      transition:opacity .4s ease;
-    }
+    #hint { margin:0 14px 18px; align-self:center; text-align:center; background:rgba(10,10,12,.6); backdrop-filter:blur(6px);
+            border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:10px 16px; color:#fff; font-size:12.5px; max-width:340px; transition:opacity .4s ease; }
     #hint b { color:#e8c46a; }
-
-    /* botão de reintentar câmera / fallback */
-    #openTop { position:fixed; top:0; left:0; right:0; z-index:9; }
+    #sound { position:fixed; right:14px; bottom:18px; z-index:11; pointer-events:auto; display:none;
+             background:rgba(10,10,12,.6); border:1px solid rgba(255,255,255,.15); color:#fff; border-radius:999px;
+             padding:9px 14px; font-size:12.5px; }
   </style>
 </head>
 <body>
 
-  <!-- ================= UI 2D ================= -->
   <div id="ui">
     <div id="brand">
-      <div class="ankh">&#9765;</div>
       <h1>J. RESSUREIÇÃO</h1>
       <p>Editor de Vídeo &amp; Criador com IA</p>
     </div>
-    <div id="hint">
-      Aponte a câmera para o <b>marcador ☥ ankh</b> impresso (ou numa outra tela).
-      Quando o cartão aparecer, <b>toque</b> nos botões.
-    </div>
+    <div id="hint">Aponte a câmera para o <b>marcador ankh</b>. O vídeo aparece por cima — <b>toque</b> nos botões.</div>
   </div>
+  <button id="sound" onclick="toggleSound()">🔊 Tocar com som</button>
 
-  <!-- ================= CENA AR ================= -->
   <a-scene
     vr-mode-ui="enabled: false"
     renderer="logarithmicDepthBuffer: true; colorManagement: true;"
     embedded
     arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; trackingMethod: best; cameraParametersUrl: https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/data/data/camera_para.dat;">
 
-    <!-- Fontes/materiais -->
-    <a-assets></a-assets>
+    <a-assets>
+      <!-- vídeo único cuja fonte trocamos via JS (playlist) -->
+      <video id="reel" src="./video_drone.mp4" preload="auto" muted playsinline webkit-playsinline crossorigin="anonymous"></video>
+    </a-assets>
 
-    <!-- Conteúdo ancorado no marcador Hiro -->
     <a-marker type="pattern" url="./pattern-ankh.patt" id="marker" smooth="true" smoothCount="8" smoothTolerance="0.01" smoothThreshold="4">
 
-      <!-- Grupo em pé, "de frente" para quem olha (levemente inclinado) -->
-      <a-entity position="0 0 0" rotation="-90 0 0">
-        <a-entity position="0 0 0.02" rotation="90 0 0">
+      <!-- Cartão SEM borda, centralizado no eixo do ankh. Ajuste o 'scale' para aumentar/diminuir tudo. -->
+      <a-entity id="card" position="0 0 0" scale="0.62 0.62 0.62">
 
-          <!-- Painel de fundo (cartão) -->
-          <a-plane position="0 1.15 0" width="2.15" height="2.7"
-                   color="#0e0e12" opacity="0.94"
-                   material="shader: flat"></a-plane>
-          <a-plane position="0 1.15 -0.01" width="2.28" height="2.83"
-                   color="#e8c46a" opacity="0.9"
-                   material="shader: flat"></a-plane>
+        <!-- Vídeo (9:16) cobrindo o marcador -->
+        <a-video id="vid" src="#reel" width="1.35" height="2.4" position="0 1.7 0" class="clickable"
+                 data-action="sound"></a-video>
 
-          <!-- Cabeçalho -->
-          <a-text value="J. RESSUREICAO" align="center" color="#ffffff"
-                  position="0 2.18 0.02" width="3.1" font="exo2bold"></a-text>
-          <a-text value="Editor de Video  &amp;  Criador com IA" align="center" color="#e8c46a"
-                  position="0 1.9 0.02" width="2.5"></a-text>
+        <!-- Título discreto sobre o topo do vídeo -->
+        <a-text value="J. RESSUREICAO" align="center" color="#ffffff" position="0 3.02 0.02" width="3.0" font="exo2bold"></a-text>
 
-          <!-- Painel Showreel (clicável) -->
-          <a-entity class="clickable" data-url="https://www.youtube.com/watch?v=x-H7hxf0GqU" position="0 1.25 0.03">
-            <a-plane width="1.75" height="0.98" color="#141821" material="shader: flat"></a-plane>
-            <a-plane width="1.75" height="0.98" color="#e8c46a" opacity="0.0" class="clickable"
-                     data-url="https://www.youtube.com/watch?v=x-H7hxf0GqU"></a-plane>
-            <!-- Botão play -->
-            <a-circle radius="0.2" color="#e8c46a" position="0 0.05 0.01"></a-circle>
-            <a-triangle color="#0e0e12" position="0.03 0.05 0.02"
-                        vertex-a="0 0.09 0" vertex-b="0 -0.09 0" vertex-c="0.12 0 0"></a-triangle>
-            <a-text value="SHOWREEL" align="center" color="#ffffff" position="0 -0.34 0.02" width="2.2"></a-text>
-          </a-entity>
-
-          <!-- Botões de link -->
-          <!-- Site -->
-          <a-entity class="clickable" data-url="https://juliomelore.github.io/julioressureicao/" position="0 0.42 0.03">
-            <a-plane width="1.75" height="0.34" color="#e8c46a" material="shader: flat"></a-plane>
-            <a-text value="VER PORTFOLIO" align="center" color="#0e0e12" position="0 0 0.02" width="2.4"></a-text>
-          </a-entity>
-          <!-- LinkedIn -->
-          <a-entity class="clickable" data-url="https://www.linkedin.com/in/juliomelore" position="0 0.0 0.03">
-            <a-plane width="1.75" height="0.34" color="#1b2330" material="shader: flat"></a-plane>
-            <a-text value="LINKEDIN" align="center" color="#ffffff" position="0 0 0.02" width="2.4"></a-text>
-          </a-entity>
-          <!-- E-mail -->
-          <a-entity class="clickable" data-url="mailto:juliomelore@gmail.com" position="0 -0.42 0.03">
-            <a-plane width="1.75" height="0.34" color="#1b2330" material="shader: flat"></a-plane>
-            <a-text value="E-MAIL" align="center" color="#ffffff" position="0 0 0.02" width="2.4"></a-text>
-          </a-entity>
-
-          <!-- Rodapé -->
-          <a-text value="feito com IA" align="center" color="#7a7f8a"
-                  position="0 -0.78 0.02" width="2.0"></a-text>
-
+        <!-- Botão PRÓXIMO (troca de vídeo) -->
+        <a-entity class="clickable" data-action="next" position="0 0.28 0.03">
+          <a-plane width="1.35" height="0.32" color="#e8c46a" material="shader: flat"></a-plane>
+          <a-text value="PROXIMO  >" align="center" color="#0e0e12" position="0 0 0.02" width="2.4"></a-text>
         </a-entity>
+
+        <!-- Coluna de botões (à direita do vídeo) -->
+        <!-- Site completo -->
+        <a-entity class="clickable" data-url="https://juliomelore.github.io/julioressureicao/" position="1.38 2.45 0.03">
+          <a-plane width="1.25" height="0.34" color="#e8c46a" material="shader: flat"></a-plane>
+          <a-text value="SITE COMPLETO" align="center" color="#0e0e12" position="0 0 0.02" width="2.05"></a-text>
+        </a-entity>
+        <!-- WhatsApp -->
+        <a-entity class="clickable" data-url="https://wa.me/5511989531368" position="1.38 2.03 0.03">
+          <a-plane width="1.25" height="0.34" color="#25D366" material="shader: flat"></a-plane>
+          <a-text value="WHATSAPP" align="center" color="#0b1f12" position="0 0 0.02" width="2.05"></a-text>
+        </a-entity>
+        <!-- LinkedIn -->
+        <a-entity class="clickable" data-url="https://www.linkedin.com/in/juliomelore" position="1.38 1.61 0.03">
+          <a-plane width="1.25" height="0.34" color="#1b2330" material="shader: flat"></a-plane>
+          <a-text value="LINKEDIN" align="center" color="#ffffff" position="0 0 0.02" width="2.05"></a-text>
+        </a-entity>
+        <!-- E-mail -->
+        <a-entity class="clickable" data-url="mailto:juliomelore@gmail.com" position="1.38 1.19 0.03">
+          <a-plane width="1.25" height="0.34" color="#1b2330" material="shader: flat"></a-plane>
+          <a-text value="E-MAIL" align="center" color="#ffffff" position="0 0 0.02" width="2.05"></a-text>
+        </a-entity>
+
       </a-entity>
     </a-marker>
 
     <a-entity camera></a-entity>
-
-    <!-- Raycaster por toque na tela -->
     <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable; far: 100"></a-entity>
   </a-scene>
 
   <script>
-    // Abre o link do elemento tocado
+    // ---------- Playlist ----------
+    var PLAYLIST = ['./video_drone.mp4','./video_rocadeira.mp4','./video_hoverkart.mp4','./showreel.mp4'];
+    var idx = 0;
+    var reel = document.getElementById('reel');
+    var soundBtn = document.getElementById('sound');
+
+    function playIndex(n){
+      idx = ((n % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length;
+      reel.src = PLAYLIST[idx];
+      reel.load();
+      var p = reel.play(); if (p && p.catch) p.catch(function(){});
+    }
+    reel.addEventListener('ended', function(){ playIndex(idx + 1); });
+
+    window.toggleSound = function(){
+      reel.muted = !reel.muted;
+      soundBtn.textContent = reel.muted ? '🔊 Tocar com som' : '🔇 Silenciar';
+      if (!reel.muted) { var p = reel.play(); if (p && p.catch) p.catch(function(){}); }
+    };
+
+    // ---------- Cliques nos elementos AR ----------
     function wireClicks(){
       document.querySelectorAll('.clickable').forEach(function(el){
         el.addEventListener('click', function(){
+          var action = el.getAttribute('data-action');
           var url = el.getAttribute('data-url');
-          if(url){ window.open(url, '_blank'); }
+          if (action === 'next') { playIndex(idx + 1); return; }
+          if (action === 'sound') { window.toggleSound(); return; }
+          if (url) { window.open(url, '_blank'); }
         });
       });
     }
-    window.addEventListener('DOMContentLoaded', wireClicks);
 
-    // Esconde a dica quando o marcador é encontrado
     document.addEventListener('DOMContentLoaded', function(){
+      wireClicks();
       var marker = document.getElementById('marker');
       var hint = document.getElementById('hint');
-      if(marker){
-        marker.addEventListener('markerFound', function(){ hint.style.opacity = '0'; });
-        marker.addEventListener('markerLost',  function(){ hint.style.opacity = '1'; });
+      if (marker){
+        marker.addEventListener('markerFound', function(){
+          hint.style.opacity = '0';
+          soundBtn.style.display = 'block';
+          var p = reel.play(); if (p && p.catch) p.catch(function(){});
+        });
+        marker.addEventListener('markerLost', function(){
+          hint.style.opacity = '1';
+          soundBtn.style.display = 'none';
+          reel.pause();
+        });
       }
-      // Aviso amigável se a câmera não iniciar (permissão negada, navegador embutido, etc.)
+      // começa mudo (autoplay permitido) no primeiro vídeo
+      playIndex(0);
+
+      // Aviso amigável se a câmera não iniciar
       setTimeout(function(){
-        var v = document.querySelector('video');
-        var ok = v && v.srcObject && !v.paused && v.videoWidth > 0;
+        var v = document.querySelector('#arjs-video, video[autoplay], video:not(#reel)');
+        var cam = document.querySelector('video#arjs-video') || document.querySelectorAll('video')[1];
+        var ok = cam && cam.srcObject && !cam.paused && cam.videoWidth > 0;
         if(!ok){
-          hint.innerHTML = 'Não consegui acessar a <b>câmera</b>. Permita o acesso quando o navegador pedir e recarregue a página. Se abriu por um app (Instagram/WhatsApp), toque em <b>“Abrir no navegador”</b> (Chrome/Safari).';
+          hint.innerHTML = 'Não consegui acessar a <b>câmera</b>. Permita o acesso e recarregue. Se abriu por um app (Instagram/WhatsApp), toque em <b>“Abrir no navegador”</b>.';
           hint.style.opacity = '1';
         }
       }, 7000);
