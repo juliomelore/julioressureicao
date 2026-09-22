@@ -676,6 +676,91 @@
       line-height: 1;
     }
 
+    /* --- VIDEO MODAL (player dentro do site) --- */
+    .vmodal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 4vh 3vw;
+    }
+    .vmodal.open { display: flex; }
+    .vmodal-inner {
+      position: relative;
+      width: min(1100px, 94vw);
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .vmodal-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border: 1px solid var(--red-dark, #3a0000);
+      box-shadow: 0 0 50px rgba(0,0,0,0.75);
+    }
+    .vmodal.portrait .vmodal-inner { width: auto; align-items: center; }
+    .vmodal.portrait .vmodal-stage {
+      aspect-ratio: 9 / 16;
+      height: min(80vh, 760px);
+      width: auto;
+    }
+    .vmodal-stage iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .vmodal-bar {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .vmodal-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #bbb;
+    }
+    .vmodal-ext {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #777;
+      text-decoration: none;
+      border-bottom: 1px solid #333;
+      white-space: nowrap;
+    }
+    .vmodal-ext:hover { color: #fff; border-color: #960000; }
+    .vmodal-close {
+      position: absolute;
+      top: -2.4rem;
+      right: 0;
+      font-size: 2rem;
+      line-height: 1;
+      color: #fff;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0 0.25rem;
+    }
+    .vmodal-close:hover { color: #ff3b3b; }
+    @media (max-width: 640px) {
+      .vmodal { padding: 2vh 3vw; }
+      .vmodal.portrait .vmodal-stage { height: min(68vh, 600px); }
+      .vmodal-close { top: -2rem; font-size: 1.6rem; }
+    }
+
   </style>
 </head>
 <body>
@@ -1971,6 +2056,18 @@
     <img src="" alt="" id="lightbox-img" />
   </div>
 
+  <!-- Player de vídeo embutido -->
+  <div class="vmodal" id="video-modal" role="dialog" aria-modal="true" aria-label="Player de vídeo">
+    <div class="vmodal-inner">
+      <button class="vmodal-close" aria-label="Fechar">&times;</button>
+      <div class="vmodal-stage"><iframe id="video-modal-frame" src="" title="Player de vídeo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+      <div class="vmodal-bar">
+        <span class="vmodal-title" id="video-modal-title"></span>
+        <a class="vmodal-ext" id="video-modal-ext" href="#" target="_blank" rel="noopener">Abrir na plataforma &#8599;</a>
+      </div>
+    </div>
+  </div>
+
   <script>
     // --- TAB NAVIGATION ---
     const tabs = document.querySelectorAll('.tab-btn');
@@ -2033,6 +2130,64 @@
       lb.addEventListener('click', close);
       lb.querySelector('.lb-close').addEventListener('click', close);
       document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    })();
+
+    // --- PLAYER EMBUTIDO (YouTube / Vimeo) ---
+    (function () {
+      const modal = document.getElementById('video-modal');
+      if (!modal) return;
+      const frame = document.getElementById('video-modal-frame');
+      const titleEl = document.getElementById('video-modal-title');
+      const extEl = document.getElementById('video-modal-ext');
+      const closeBtn = modal.querySelector('.vmodal-close');
+
+      // Reconhece os formatos de link usados no site e devolve o src do player.
+      function parse(url) {
+        let m;
+        if ((m = url.match(/youtube\.com\/shorts\/([\w-]{6,})/)))
+          return { src: 'https://www.youtube.com/embed/' + m[1], portrait: true };
+        if ((m = url.match(/youtube\.com\/embed\/([\w-]{6,})/)))
+          return { src: 'https://www.youtube.com/embed/' + m[1], portrait: false };
+        if ((m = url.match(/[?&]v=([\w-]{6,})/)))
+          return { src: 'https://www.youtube.com/embed/' + m[1], portrait: false };
+        if ((m = url.match(/youtu\.be\/([\w-]{6,})/)))
+          return { src: 'https://www.youtube.com/embed/' + m[1], portrait: false };
+        if ((m = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:[?&]h=(\w+))?/)))
+          return { src: 'https://player.vimeo.com/video/' + m[1] + (m[2] ? '?h=' + m[2] : ''), portrait: false, vimeo: true };
+        return null;
+      }
+
+      function open(url, title) {
+        const info = parse(url);
+        if (!info) return false;
+        const sep = info.src.indexOf('?') === -1 ? '?' : '&';
+        frame.src = info.src + sep + (info.vimeo ? 'autoplay=1' : 'autoplay=1&rel=0&playsinline=1&modestbranding=1');
+        titleEl.textContent = title || '';
+        extEl.href = url;
+        modal.classList.toggle('portrait', !!info.portrait);
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        return true;
+      }
+
+      function close() {
+        modal.classList.remove('open');
+        frame.src = '';               // para a reprodução ao fechar
+        document.body.style.overflow = '';
+      }
+
+      document.querySelectorAll('a.yt-thumb-link').forEach(a => {
+        a.addEventListener('click', e => {
+          const card = a.closest('.video-card');
+          const h3 = card ? card.querySelector('.video-info h3') : null;
+          // Se o link não for de um vídeo reconhecido, deixa abrir normalmente.
+          if (open(a.getAttribute('href'), h3 ? h3.textContent.trim() : '')) e.preventDefault();
+        });
+      });
+
+      closeBtn.addEventListener('click', close);
+      modal.addEventListener('click', e => { if (e.target === modal) close(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) close(); });
     })();
   </script>
 
