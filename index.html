@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>J. Ressureição — Portfólio IA</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <style>
@@ -759,6 +760,43 @@
       .vmodal { padding: 2vh 3vw; }
       .vmodal.portrait .vmodal-stage { height: min(68vh, 600px); }
       .vmodal-close { top: -2rem; font-size: 1.6rem; }
+    }
+
+    .vmodal-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      line-height: 1;
+      color: #ddd;
+      background: rgba(10,10,12,0.55);
+      border: 1px solid rgba(255,255,255,0.14);
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.2s, background 0.2s, border-color 0.2s;
+    }
+    .vmodal-nav:hover { color: #fff; background: rgba(150,0,0,0.55); border-color: #960000; }
+    .vmodal-nav[hidden] { display: none; }
+    .vmodal-nav.prev { left: -64px; }
+    .vmodal-nav.next { right: -64px; }
+    .vmodal-count {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      color: #666;
+      margin-left: 0.6rem;
+    }
+    @media (max-width: 1040px) {
+      .vmodal-nav.prev { left: 6px; }
+      .vmodal-nav.next { right: 6px; }
+    }
+    @media (max-width: 640px) {
+      .vmodal-nav { width: 36px; height: 54px; font-size: 1.6rem; }
     }
 
   </style>
@@ -2060,9 +2098,11 @@
   <div class="vmodal" id="video-modal" role="dialog" aria-modal="true" aria-label="Player de vídeo">
     <div class="vmodal-inner">
       <button class="vmodal-close" aria-label="Fechar">&times;</button>
-      <div class="vmodal-stage"><iframe id="video-modal-frame" src="" title="Player de vídeo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+      <button class="vmodal-nav prev" id="video-modal-prev" aria-label="Vídeo anterior">&lsaquo;</button>
+      <button class="vmodal-nav next" id="video-modal-next" aria-label="Próximo vídeo">&rsaquo;</button>
+      <div class="vmodal-stage" id="video-modal-stage"></div>
       <div class="vmodal-bar">
-        <span class="vmodal-title" id="video-modal-title"></span>
+        <span><span class="vmodal-title" id="video-modal-title"></span><span class="vmodal-count" id="video-modal-count"></span></span>
         <a class="vmodal-ext" id="video-modal-ext" href="#" target="_blank" rel="noopener">Abrir na plataforma &#8599;</a>
       </div>
     </div>
@@ -2132,62 +2172,111 @@
       document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
     })();
 
-    // --- PLAYER EMBUTIDO (YouTube / Vimeo) ---
+    // --- PLAYER EMBUTIDO (YouTube / Vimeo) COM NAVEGACAO ---
     (function () {
       const modal = document.getElementById('video-modal');
       if (!modal) return;
-      const frame = document.getElementById('video-modal-frame');
+      const stage = document.getElementById('video-modal-stage');
       const titleEl = document.getElementById('video-modal-title');
+      const countEl = document.getElementById('video-modal-count');
       const extEl = document.getElementById('video-modal-ext');
       const closeBtn = modal.querySelector('.vmodal-close');
+      const prevBtn = document.getElementById('video-modal-prev');
+      const nextBtn = document.getElementById('video-modal-next');
+
+      let lista = [];   // links da mesma grade/carrossel
+      let idx = 0;
 
       // Reconhece os formatos de link usados no site e devolve o src do player.
       function parse(url) {
         let m;
         if ((m = url.match(/youtube\.com\/shorts\/([\w-]{6,})/)))
-          return { src: 'https://www.youtube.com/embed/' + m[1], portrait: true };
+          return { src: 'https://www.youtube-nocookie.com/embed/' + m[1], portrait: true };
         if ((m = url.match(/youtube\.com\/embed\/([\w-]{6,})/)))
-          return { src: 'https://www.youtube.com/embed/' + m[1], portrait: false };
+          return { src: 'https://www.youtube-nocookie.com/embed/' + m[1], portrait: false };
         if ((m = url.match(/[?&]v=([\w-]{6,})/)))
-          return { src: 'https://www.youtube.com/embed/' + m[1], portrait: false };
+          return { src: 'https://www.youtube-nocookie.com/embed/' + m[1], portrait: false };
         if ((m = url.match(/youtu\.be\/([\w-]{6,})/)))
-          return { src: 'https://www.youtube.com/embed/' + m[1], portrait: false };
+          return { src: 'https://www.youtube-nocookie.com/embed/' + m[1], portrait: false };
         if ((m = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:[?&]h=(\w+))?/)))
           return { src: 'https://player.vimeo.com/video/' + m[1] + (m[2] ? '?h=' + m[2] : ''), portrait: false, vimeo: true };
         return null;
       }
 
-      function open(url, title) {
-        const info = parse(url);
-        if (!info) return false;
-        const sep = info.src.indexOf('?') === -1 ? '?' : '&';
-        frame.src = info.src + sep + (info.vimeo ? 'autoplay=1' : 'autoplay=1&rel=0&playsinline=1&modestbranding=1');
-        titleEl.textContent = title || '';
-        extEl.href = url;
-        modal.classList.toggle('portrait', !!info.portrait);
-        modal.classList.add('open');
-        document.body.style.overflow = 'hidden';
-        return true;
+      function tituloDe(a) {
+        const card = a.closest('.video-card');
+        const h3 = card ? card.querySelector('.video-info h3') : null;
+        return h3 ? h3.textContent.trim() : '';
       }
 
-      function close() {
+      // Monta o iframe do zero a cada video (destruir o iframe e o que realmente para o audio).
+      function montar() {
+        const a = lista[idx];
+        const info = parse(a.getAttribute('href'));
+        if (!info) return;
+        stage.textContent = '';
+        const f = document.createElement('iframe');
+        f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin'); // antes do src
+        f.setAttribute('allowfullscreen', '');
+        f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+        f.title = tituloDe(a) || 'Player de video';
+        const sep = info.src.indexOf('?') === -1 ? '?' : '&';
+        f.src = info.src + sep + (info.vimeo ? 'autoplay=1' : 'autoplay=1&rel=0&playsinline=1&modestbranding=1');
+        stage.appendChild(f);
+
+        titleEl.textContent = tituloDe(a);
+        countEl.textContent = lista.length > 1 ? (idx + 1) + '/' + lista.length : '';
+        extEl.href = a.getAttribute('href');
+        modal.classList.toggle('portrait', !!info.portrait);
+        const varios = lista.length > 1;
+        prevBtn.hidden = !varios;
+        nextBtn.hidden = !varios;
+      }
+
+      function passa(d) {
+        if (lista.length < 2) return;
+        idx = (idx + d + lista.length) % lista.length;   // da a volta nas pontas
+        montar();
+      }
+
+      function abrir(a) {
+        // A lista de navegacao e a propria grade/carrossel em que o video foi clicado.
+        const bloco = a.closest('.video-grid, .carousel-track, .gallery-grid') || document;
+        lista = [].slice.call(bloco.querySelectorAll('a.yt-thumb-link'))
+                  .filter(el => parse(el.getAttribute('href')));
+        idx = lista.indexOf(a);
+        if (idx === -1) { lista = [a]; idx = 0; }
+        montar();
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function fechar() {
         modal.classList.remove('open');
-        frame.src = '';               // para a reprodução ao fechar
+        stage.textContent = '';            // destroi o iframe: para o audio de verdade
         document.body.style.overflow = '';
+        lista = [];
       }
 
       document.querySelectorAll('a.yt-thumb-link').forEach(a => {
         a.addEventListener('click', e => {
-          const card = a.closest('.video-card');
-          const h3 = card ? card.querySelector('.video-info h3') : null;
-          // Se o link não for de um vídeo reconhecido, deixa abrir normalmente.
-          if (open(a.getAttribute('href'), h3 ? h3.textContent.trim() : '')) e.preventDefault();
+          // Se o link nao for de um video reconhecido, deixa abrir normalmente.
+          if (!parse(a.getAttribute('href'))) return;
+          e.preventDefault();
+          abrir(a);
         });
       });
 
-      closeBtn.addEventListener('click', close);
-      modal.addEventListener('click', e => { if (e.target === modal) close(); });
-      document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) close(); });
+      prevBtn.addEventListener('click', e => { e.stopPropagation(); passa(-1); });
+      nextBtn.addEventListener('click', e => { e.stopPropagation(); passa(1); });
+      closeBtn.addEventListener('click', fechar);
+      modal.addEventListener('click', e => { if (e.target === modal) fechar(); });
+      document.addEventListener('keydown', e => {
+        if (!modal.classList.contains('open')) return;
+        if (e.key === 'Escape') fechar();
+        else if (e.key === 'ArrowLeft') passa(-1);
+        else if (e.key === 'ArrowRight') passa(1);
+      });
     })();
   </script>
 
